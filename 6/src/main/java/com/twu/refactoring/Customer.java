@@ -29,8 +29,7 @@ public class Customer {
             Rental rental = rentals.next();
 
             // add frequent renter points
-            frequentRenterPoints = addFrequentRenterPoints(frequentRenterPoints);
-            frequentRenterPoints = addBonusForTwoDayNewReleaseRental(frequentRenterPoints, rental);
+            frequentRenterPoints += rental.addBonusForTwoDayNewReleaseRental();
 
             result = getFiguresForRental(result, determineAmountsForEachLine(rental), rental);
             totalAmount += determineAmountsForEachLine(rental);
@@ -43,22 +42,10 @@ public class Customer {
         return result;
     }
 
-    private int addFrequentRenterPoints(int frequentRenterPoints) {
-        return frequentRenterPoints + 1;
-    }
-
-
     private String getFiguresForRental(String result, double thisAmount, Rental each) {
         result += "\t" + each.getMovie().getTitle() + "\t"
                 + String.valueOf(thisAmount) + "\n";
         return result;
-    }
-
-    private int addBonusForTwoDayNewReleaseRental(int frequentRenterPoints, Rental each) {
-        if ((each.getMovie().getPriceCode() == Movie.NEW_RELEASE)
-                && each.getDaysRented() > 1)
-            frequentRenterPoints++;
-        return frequentRenterPoints;
     }
 
     private double determineAmountsForEachLine(Rental rental) {
