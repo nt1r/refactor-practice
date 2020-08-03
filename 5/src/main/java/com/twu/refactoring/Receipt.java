@@ -19,10 +19,8 @@ public class Receipt {
 
     public double getTotalCost() {
         double totalCost = 0;
-
         totalCost = addFixedCharge(totalCost);
         totalCost = addTaxiCharges(totalCost);
-
         return totalCost * (1 + SALES_TAX_RATE);
     }
 
