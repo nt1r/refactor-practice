@@ -8,7 +8,9 @@ package com.twu.refactoring;
  * 
  */
 public class OrderReceipt {
-    private Order order;
+	public static final double TAX_RATE = .10;
+	public static final String SALES_TAX = "Sales Tax";
+	private Order order;
 
     public OrderReceipt(Order order) {
         this.order = order;
@@ -17,41 +19,68 @@ public class OrderReceipt {
 	public String printReceipt() {
 		StringBuilder output = new StringBuilder();
 
-		// print headers
-		output.append("======Printing Orders======\n");
+		printHeaders(output);
 
-		// print date, bill no, customer name
-//        output.append("Date - " + order.getDate();
-        output.append(order.getCustomerName());
-        output.append(order.getCustomerAddress());
-//        output.append(order.getCustomerLoyaltyNumber());
+		printDate_Bill_Name(output);
 
 		// prints lineItems
-		double totSalesTx = 0d;
-		double tot = 0d;
+		double totalSalesTax = 0d;
+		double totalAmountOfLineItems = 0d;
 		for (LineItem lineItem : order.getLineItems()) {
-			output.append(lineItem.getDescription());
-			output.append('\t');
-			output.append(lineItem.getPrice());
-			output.append('\t');
-			output.append(lineItem.getQuantity());
-			output.append('\t');
-			output.append(lineItem.totalAmount());
-			output.append('\n');
+			printLineItems(output, lineItem);
 
-			// calculate sales tax @ rate of 10%
-            double salesTax = lineItem.totalAmount() * .10;
-            totSalesTx += salesTax;
+			totalSalesTax += calculateSalesTax(lineItem);
 
-            // calculate total amount of lineItem = price * quantity + 10 % sales tax
-            tot += lineItem.totalAmount() + salesTax;
+            totalAmountOfLineItems += calculateTotalAmountOfLineItems(lineItem);
 		}
 
-		// prints the state tax
-		output.append("Sales Tax").append('\t').append(totSalesTx);
+		printStateTax(output, totalSalesTax);
 
-        // print total amount
-		output.append("Total Amount").append('\t').append(tot);
+		printTotalAmount(output, totalAmountOfLineItems);
 		return output.toString();
+	}
+
+	private void printTotalAmount(StringBuilder output, double totalAmountOfLineItems) {
+		output.append("Total Amount").append('\t').append(totalAmountOfLineItems);
+	}
+
+	private void printStateTax(StringBuilder output, double totalSalesTax) {
+		output.append(SALES_TAX).append('\t').append(totalSalesTax);
+	}
+
+	private double calculateTotalAmountOfLineItems(LineItem lineItem) {
+		return lineItem.totalAmount() + calculateSalesTax(lineItem);
+	}
+
+	private double calculateSalesTax(LineItem lineItem) {
+		return lineItem.totalAmount() * TAX_RATE;
+	}
+
+	private void printLineItems(StringBuilder output, LineItem lineItem) {
+		PrintString(output, lineItem.getDescription());
+		output.append('\t');
+		output.append(lineItem.getPrice());
+		output.append('\t');
+		output.append(lineItem.getQuantity());
+		output.append('\t');
+		output.append(lineItem.totalAmount());
+		output.append('\n');
+	}
+
+	private void printDate_Bill_Name(StringBuilder output) {
+		PrintString(output, order.getCustomerName());
+		PrintString(output, order.getCustomerAddress());
+	}
+
+	private void printHeaders(StringBuilder outputStringBuilder) {
+		PrintString(outputStringBuilder, getHeaderString());
+	}
+
+	private void PrintString(StringBuilder outputStringBuilder, String string) {
+		outputStringBuilder.append(string);
+	}
+
+	private String getHeaderString() {
+		return "======Printing Orders======\n";
 	}
 }
