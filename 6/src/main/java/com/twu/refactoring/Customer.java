@@ -26,17 +26,14 @@ public class Customer {
         Iterator<Rental> rentals = rentalList.iterator();
         String result = "Rental Record for " + getName() + "\n";
         while (rentals.hasNext()) {
-            double thisAmount = 0;
-            Rental each = rentals.next();
-
-            thisAmount = determineAmountsForEachLine(thisAmount, each);
+            Rental rental = rentals.next();
 
             // add frequent renter points
             frequentRenterPoints = addFrequentRenterPoints(frequentRenterPoints);
-            frequentRenterPoints = addBonusForTwoDayNewReleaseRental(frequentRenterPoints, each);
+            frequentRenterPoints = addBonusForTwoDayNewReleaseRental(frequentRenterPoints, rental);
 
-            result = getFiguresForRental(result, thisAmount, each);
-            totalAmount += thisAmount;
+            result = getFiguresForRental(result, determineAmountsForEachLine(rental), rental);
+            totalAmount += determineAmountsForEachLine(rental);
 
         }
         // add footer lines
@@ -64,23 +61,7 @@ public class Customer {
         return frequentRenterPoints;
     }
 
-    private double determineAmountsForEachLine(double thisAmount, Rental rental) {
-        switch (rental.getMovie().getPriceCode()) {
-            case Movie.REGULAR:
-                thisAmount += 2;
-                if (rental.getDaysRented() > 2)
-                    thisAmount += (rental.getDaysRented() - 2) * 1.5;
-                break;
-            case Movie.NEW_RELEASE:
-                thisAmount += rental.getDaysRented() * 3;
-                break;
-            case Movie.CHILDRENS:
-                thisAmount += 1.5;
-                if (rental.getDaysRented() > 3)
-                    thisAmount += (rental.getDaysRented() - 3) * 1.5;
-                break;
-
-        }
-        return thisAmount;
+    private double determineAmountsForEachLine(Rental rental) {
+        return rental.getCharge();
     }
 }
